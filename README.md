@@ -18,4 +18,6 @@ PyQt5做界面，使用百度文字识别API接口来实现识别图片中的文
 
 ## 2月29号更新  （BY SUMMER）
 - 1.appid，apikey，screet key 可以自行填写；
-- 2.添加错误判断，未填写appid，apikey，screet key时弹出对话框提示错误/未选中图片或无截图时弹出对话框提示错误/appid，apikey，screet key不正确时，弹出对话框提示错误
+- 2.添加错误判断，未填写appid，apikey，screet key时弹出对话框提示错误；
+未选中图片或无截图时弹出对话框提示错误；
+appid，apikey，screet key不正确时，弹出对话框提示错误
