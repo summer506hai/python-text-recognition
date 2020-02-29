@@ -24,10 +24,13 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import sys
 
-from constant import *
-from toolbar import *
-from colorbar import *
-from textinput import *
+
+from src.constant import PENCOLOR, PENSIZE, MousePosition, ACTION_SELECT, ACTION_MOVE_SELECTED, DRAW_ACTION, \
+    ACTION_FREEPEN, ACTION_TEXT, ACTION_RECT, ACTION_ELLIPSE, ACTION_ARROW, ACTION_LINE, ERRORRANGE, ACTION_UNDO, \
+    ACTION_SAVE, ACTION_CANCEL, ACTION_SURE
+from src.toolbar import *
+from src.colorbar import *
+from src.textinput import *
 
 from math import *
 
@@ -846,11 +849,11 @@ class ScreenShot(QGraphicsView):
 
 ## 百度API参数
 
-APP_ID = '9851066'  
-API_KEY = 'LUGBatgyRGoerR9FZbV4SQYk'  
-SECRET_KEY = 'fB2MNz1c2UHLTximFlC4laXPg7CVfyjV' 
+#APP_ID = '18482811'
+#API_KEY = 't3D84UhOtCUZrxfXKyYlyzWK'
+#SECRET_KEY = 'LbSezgQPcrfHFVRDtdhUG5MfykyPbdsk'
 # 初始化文字识别
-aipOcr = AipOcr(APP_ID, API_KEY, SECRET_KEY)
+#aipOcr = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 options = {
         'detect_direction':'true',
         'language_type':'CHN_ENG'}
@@ -877,6 +880,13 @@ class MyApp(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.initUI()       # 调用自定义的UI初始化函数initUI()
         self.status = False # 状态变量，如果是打开图片来转换的，设置status为True，以区分截图时调用的图片转换函数
+        self.APP_ID = ''
+        self.API_KEY = ''
+        self.SECRET_KEY = ''
+        self.fileName1=None
+        self.fileName2 = None
+
+
 
     def initUI(self):
         '''
@@ -933,20 +943,20 @@ class MyApp(QMainWindow, Ui_MainWindow):
         '''
         使用QFileDialog打开文件管理器
         '''
-        global fileName1    # 设置全局
+        #global fileName1    # 设置全局
         self.status = True
-        fileName1, filetype = QFileDialog.getOpenFileName(self,
+        self.fileName1, filetype = QFileDialog.getOpenFileName(self,
                                     "选取图片文件",
                                     "/home/kindy/图片",
                                     "All Files (*);;Music Files (*.png)")   #设置文件扩展名过滤,注意用双分号间隔
-        self.filePath.setText(fileName1)
+        self.filePath.setText(self.fileName1)
 
     def screenButton_callback(self):
         '''
         打开截图，点击对勾号会自动保存在目录"../temp/temp.png"
         '''
-        global fileName2
-        fileName2 = r'../temp/temp.png'
+        #global fileName2
+        self.fileName2 = r'../temp/temp.png'
         
         self.cap = ScreenShot()
         self.cap.show()
@@ -956,21 +966,53 @@ class MyApp(QMainWindow, Ui_MainWindow):
         '''
         调用百度API进行文字识别
         '''
-        start = time.time()
-        if self.status:
-            res = aipOcr.webImage(getImageBytes(fileName1))
+        # 初始化文字识别
+        self.APP_ID = self.appid.text()
+        self.API_KEY = self.apikey.text()
+        self.SECRET_KEY = self.screetkey.text()
+        self.plainTextEdit.setPlainText('')
+        self.plainTextEdit.setStatusTip('')
+        if self.APP_ID == '' or self.API_KEY == '' or self.SECRET_KEY == '':
+            if self.APP_ID == '':
+                QMessageBox.critical(self, "标题",
+                        "请输入appid", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if self.API_KEY == '':
+                QMessageBox.critical(self, "标题",
+                        "请输入apikey", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if self.SECRET_KEY == '':
+                QMessageBox.critical(self, "标题",
+                        "请输入screetkey", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         else:
-            res = aipOcr.webImage(getImageBytes(fileName2))
-        txt=res['words_result']
-        text = str()
+            self.aipOcr = AipOcr(self.APP_ID, self.API_KEY, self.SECRET_KEY)
+            start = time.time()
+            if self.fileName1 == None and self.fileName2 == None:
+                QMessageBox.critical(self, "标题",
+                                     "请选择一张图片，或进行截图", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            else:
+                if self.status:
+                    res = self.aipOcr.webImage(getImageBytes(self.fileName1))
+                else:
+                    res = self.aipOcr.webImage(getImageBytes(self.fileName2))
+                print(res)
+                flag = True
+                for i in res:
+                    if ('error_code' in i or ('error_msg' in i)):
+                        flag = True
+                    else:
+                        flag = False
+                if flag:
+                    QMessageBox.critical(self, "标题",
+                                         "输入信息有误，请重新输入", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
 
-        for i in range(len(txt)):
-            text += (str(txt[i]['words'])+ '\n')
-        self.plainTextEdit.setPlainText(text)
-
-        print(text)
-        end = time.time()
-        self.plainTextEdit.setStatusTip("图片文字转换时间：%.2fs"%(end-start))
+                else:
+                    txt=res['words_result']
+                    text = str()
+                    for i in range(len(txt)):
+                        text += (str(txt[i]['words'])+ '\n')
+                    self.plainTextEdit.setPlainText(text)
+                    print(text)
+                    end = time.time()
+                    self.plainTextEdit.setStatusTip("图片文字转换时间：%.2fs"%(end-start))
     #def closeEvent(self, event):
 
         #reply = QMessageBox.question(self, 'Message',

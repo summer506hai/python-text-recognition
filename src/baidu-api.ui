@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>551</width>
-    <height>473</height>
+    <width>610</width>
+    <height>398</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="appid">
         <property name="text">
-         <string>10468218</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -41,7 +41,7 @@
       <item row="1" column="1">
        <widget class="QLineEdit" name="apikey">
         <property name="text">
-         <string>MEq2nudNONuFbdAGLVxY3GdV</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -55,7 +55,7 @@
       <item row="2" column="1">
        <widget class="QLineEdit" name="screetkey">
         <property name="text">
-         <string>Bz2WPGa4IyYws0bN4l66dLvmmn5nfNzC</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -123,8 +123,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>551</width>
-     <height>23</height>
+     <width>610</width>
+     <height>18</height>
     </rect>
    </property>
   </widget>
